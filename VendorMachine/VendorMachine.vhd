@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity soda is
+entity VendorMachine is
   port (
       clk, clk_fpga: std_logic;
       reset: in bit;
@@ -14,9 +14,9 @@ entity soda is
       exchange: out bit := '0';
       stateOut: out bit := '0'
        );
-end soda;
+end VendorMachine;
 
-architecture behaviour of soda is
+architecture behaviour of VendorMachine is
   type states is (noMoney, money);
   signal state: states;
   signal currentMoney: unsigned(4 downto 0) := (others => '0');
@@ -28,7 +28,7 @@ architecture behaviour of soda is
           button: in std_logic;
           clk: in std_logic;
           
-          buttonDebounce: out std_logic
+          debounced_button: out std_logic
         );
   end component;
 
@@ -41,13 +41,14 @@ architecture behaviour of soda is
       when "010" => outValue := outValue + 5;
       when "011" => outValue := outValue + 10;
       when "100" => outValue := outValue + 20;
+      when others => outValue := outValue;
     end case;
     return outValue;
   end function coinValue;
 begin
   debouncer: Debouncing_Button_VHDL
     port map (
-                button => clk, clk => clk_fpga, buttonDebounce => clock
+                button => clk, clk => clk_fpga, debounced_button => clock
              );
   process(clock)
   begin
